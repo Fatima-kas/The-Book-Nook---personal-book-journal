@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quote Keep | My Novel Diary</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        .quote-container {
+            max-width: 800px;
+            margin: auto;
+            padding: 2rem;
+            background: #fff8f2;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .quote-card {
+            background: #ffffff;
+            padding: 1.2rem;
+            margin-top: 1rem;
+            border-left: 6px solid #d6b8a1;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+        }
+
+        .quote-card p {
+            font-style: italic;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        .quote-card span {
+            display: block;
+            text-align: right;
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+
+        .delete-btn {
+            background-color: #c57b85;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+
+        .delete-btn:hover {
+            background-color: #a15565;
+        }
+
+        .search-bar {
+            margin: 1rem 0;
+            padding: 0.8rem;
+            width: 100%;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+        }
+
+        @media (max-width: 600px) {
+            .quote-card p {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>The Book Nook</h1>
+        <div class="hamburger" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <nav>
+            <ul id="sidebar">
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="MemoryBoard.html">MemoryBoard</a></li>
+                <li><a href="library-log.html">Reading Journey</a></li>
+                <li><a href="tbr.html">TBR List</a></li>
+                <li><a href="quotes.html">Quote Keeping</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section class="quote-container">
+            <h2>📝 Quote Keep</h2>
+            <p>Preserve the lines that touched your soul. Add your favorite book quotes and the author's name.</p>
+            <form onsubmit="addQuote(event)">
+                <input type="text" id="quoteText" placeholder="Enter your favorite quote" required
+                    style="width:100%; padding:0.8rem; margin: 1rem 0;" list="suggestions" />
+                <datalist id="suggestions"></datalist>
+                <input type="text" id="quoteAuthor" placeholder="Author or Book Name"
+                    style="width:100%; padding:0.8rem;" />
+                <button type="submit" style="margin-top: 1rem;">Add Quote</button>
+            </form>
+            <div id="customModal" class="modal">
+                <div class="modal-content">
+                    <h3 style="background-color:#fecbcb;">🗑️ Delete Quote?</h3>
+                    <p style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">This quote will
+                        be removed from your collection. Are you sure?</p>
+                    <div class="modal-actions">
+                        <button id="confirmDelete">Yes, Delete</button>
+                        <button id="cancelDelete">Cancel</button>
+                    </div>
+                </div>
+            </div>
+
+
+            <input type="text" id="searchBar" class="search-bar" placeholder="Search your saved quotes..."
+                oninput="filterQuotes()" />
+
+            <div id="quotesList">
+                <!-- Quote cards will appear here -->
+            </div>
+        </section>
+
+    </main>
+    <footer>
+        <p>&copy; 2025 Noor Fatima Kas Kas. All Rights Reserved.</p>
+    </footer>
+    <script>
+        function toggleMenu() {
+      document.getElementById("sidebar").classList.toggle("active");
+    }
+    
+        let savedQuotes = JSON.parse(localStorage.getItem("quoteKeep") || "[]");
+        const listContainer = document.getElementById("quotesList");
+        const quoteInput = document.getElementById("quoteText");
+        const suggestionBox = document.getElementById("suggestions");
+
+        function renderQuotes(quotes = savedQuotes) {
+            listContainer.innerHTML = "";
+            quotes.forEach((q, index) => {
+                const card = document.createElement("div");
+                card.className = "quote-card";
+                card.innerHTML = `
+          <p>“${q.text}”</p>
+          <span>- ${q.author || "Unknown"}</span>
+          <button class="delete-btn" onclick="deleteQuote(${index})">Delete</button>
+        `;
+                listContainer.appendChild(card);
+            });
+        }
+
+        function addQuote(e) {
+            e.preventDefault();
+            const text = quoteInput.value.trim();
+            const author = document.getElementById("quoteAuthor").value.trim();
+
+            if (!text) return;
+
+            savedQuotes.unshift({ text, author });
+            localStorage.setItem("quoteKeep", JSON.stringify(savedQuotes));
+            renderQuotes();
+
+            quoteInput.value = "";
+            document.getElementById("quoteAuthor").value = "";
+        }
+
+        let deleteIndex = null;
+
+        function deleteQuote(index) {
+            deleteIndex = index;
+            document.getElementById("customModal").style.display = "flex";
+        }
+
+        document.getElementById("confirmDelete").onclick = function () {
+            if (deleteIndex !== null) {
+                savedQuotes.splice(deleteIndex, 1);
+                localStorage.setItem("quoteKeep", JSON.stringify(savedQuotes));
+                renderQuotes();
+                deleteIndex = null;
+                document.getElementById("customModal").style.display = "none";
+            }
+        };
+
+        document.getElementById("cancelDelete").onclick = function () {
+            deleteIndex = null;
+            document.getElementById("customModal").style.display = "none";
+        };
+
+
+        function filterQuotes() {
+            const q = document.getElementById("searchBar").value.toLowerCase();
+            const filtered = savedQuotes.filter(item => item.text.toLowerCase().includes(q) || item.author.toLowerCase().includes(q));
+            renderQuotes(filtered);
+        }
+
+        quoteInput.addEventListener("input", async () => {
+            const value = quoteInput.value.trim();
+            if (value.length < 3) return;
+            try {
+                const res = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${value}`);
+                const items = res.data.items || [];
+                suggestionBox.innerHTML = "";
+                const suggestions = new Set();
+                items.forEach(book => {
+                    const text = book.volumeInfo.title || "";
+                    const desc = book.volumeInfo.description || "";
+                    const quoteLike = desc.split(/[.!?]/).filter(line => line.length > 20);
+                    quoteLike.forEach(q => suggestions.add(q.trim()));
+                });
+                [...suggestions].slice(0, 10).forEach(s => {
+                    const opt = document.createElement("option");
+                    opt.value = s;
+                    suggestionBox.appendChild(opt);
+                });
+            } catch (err) {
+                console.error("Error fetching suggestions:", err);
+            }
+        });
+
+        renderQuotes();
+    </script>
+</body>
+
+</html>

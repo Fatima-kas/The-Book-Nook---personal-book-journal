@@ -1,0 +1,137 @@
+<!-- My Novel Diary - LOGIN PAGE -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | The Book Nook</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand&family=Outfit:wght@300;400;600&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background: linear-gradient(to right, #fce3d0, #f9e4df);
+    }
+
+    header,
+    footer {
+      background-color: #d6b8a1;
+      color: white;
+      padding: 1rem 2rem;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2rem;
+    }
+
+    .login-wrapper {
+      flex-grow: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    .login-box {
+      background: #fff;
+      padding: 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .login-box h2 {
+      margin-bottom: 1.5rem;
+      font-size: 1.8rem;
+      color: #5b4a42;
+      text-align: center;
+    }
+
+    .login-box input,
+    .login-box button {
+      width: 100%;
+      padding: 0.8rem;
+      margin: 0.6rem 0;
+      border-radius: 8px;
+      border: 1px solid #d6b8a1;
+      font-size: 1rem;
+    }
+
+    .login-box button {
+      background-color: #b79982;
+      color: white;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .login-box button:hover {
+      background-color: #a1816f;
+    }
+
+    .login-box p {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: #555;
+      text-align: center;
+    }
+
+    .login-box a {
+      color: #a1816f;
+      text-decoration: none;
+    }
+
+    .login-box a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>The Book Nook</h1>
+  </header>
+  <div class="login-wrapper">
+    <div class="login-box">
+      <h2>Login to Your Book Diary</h2>
+      <input type="text" id="username" placeholder="Enter Username" />
+      <input type="password" id="password" placeholder="Enter Password" />
+      <button onclick="login()">Login</button>
+      <p>Don't have an account? <a href="register.html">Register here</a></p>
+    </div>
+  </div>
+  <footer>
+    <p>&copy; 2025 Noor Fatima Kas. All Rights Reserved.</p>
+  </footer>
+  <script>
+    function login() {
+      const user = document.getElementById('username').value.trim();
+      const pass = document.getElementById('password').value.trim();
+      const allUsers = JSON.parse(localStorage.getItem('users') || '{}');
+
+      if (allUsers[user] && allUsers[user] === pass) {
+        localStorage.setItem('loggedInUser', user);
+        window.location.href = "dashboard.html";
+      } else {
+        alert("Invalid username or password. Please try again.");
+      }
+    }
+  </script>
+</body>
+
+</html>

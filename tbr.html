@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TBR List | The Book Nook</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        .tbr-container {
+            max-width: 800px;
+            margin: auto;
+            padding: 2rem;
+            background: #fff8f2;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        form input,
+        form select,
+        form button {
+            margin-bottom: 1rem;
+        }
+
+        .tbr-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+        }
+
+        .tbr-table th,
+        .tbr-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .tbr-table th {
+            background: #d6b8a1;
+            color: white;
+        }
+
+        .delete-btn {
+            background-color: #c57b85;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background-color: #a15565;
+        }
+
+        @media (max-width: 600px) {
+
+            form input,
+            form select,
+            form button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>The Book Nook</h1>
+        <div class="hamburger" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <nav>
+            <ul id="sidebar">
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="MemoryBoard.html">MemoryBoard</a></li>
+                <li><a href="library-log.html">Reading Journey</a></li>
+                <li><a href="tbr.html">TBR List</a></li>
+                <li><a href="quotes.html">Quote Keeping</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section class="tbr-container">
+            <h2>📖 To Be Read</h2>
+            <p>Plan your next reads and keep your list curated with ease.</p>
+            <form onsubmit="addTBR(event)">
+                <input type="text" id="tbrTitle" placeholder="Book Title" list="titles" />
+                <datalist id="titles"></datalist>
+
+                <input type="text" id="tbrAuthor" placeholder="Author" list="authors" />
+                <datalist id="authors"></datalist>
+
+                <input type="date" id="tbrDate" />
+
+                <select id="tbrPriority">
+                    <option value="Low">Low Priority</option>
+                    <option value="Medium">Medium Priority</option>
+                    <option value="High">High Priority</option>
+                </select>
+
+                <button type="submit">Add to List</button>
+            </form>
+
+            <table class="tbr-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Target Date</th>
+                        <th>Priority</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="tbrTable">
+                    <!-- Rows go here -->
+                </tbody>
+            </table>
+        </section>
+
+        <div id="customModal" class="modal">
+            <div class="modal-content">
+                <h3 style="background-color:#fecbcb;">🗑️ Remove from TBR?</h3>
+                <p>This book will be permanently removed from your To-Be-Read list. Are you sure?</p>
+                <div class="modal-actions">
+                    <button id="confirmDelete">Yes, Delete</button>
+                    <button id="cancelDelete">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+    <footer>
+        <p>&copy; 2025 Noor Fatima Kas. All Rights Reserved.</p>
+    </footer>
+    <script>
+        let deleteIndex = null;
+        function toggleMenu() {
+            document.getElementById("sidebar").classList.toggle("active");
+        }
+        const tbrData = JSON.parse(localStorage.getItem("tbrList") || "[]");
+        const table = document.getElementById("tbrTable");
+        const titleInput = document.getElementById("tbrTitle");
+        const authorInput = document.getElementById("tbrAuthor");
+        const titleList = document.getElementById("titles");
+        const authorList = document.getElementById("authors");
+
+        function renderTBR() {
+            table.innerHTML = "";
+            tbrData.forEach((entry, index) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+          <td>${entry.title}</td>
+          <td>${entry.author}</td>
+          <td><input type="date" value="${entry.date}" onchange="updateDate(${index}, this.value)"/></td>
+          <td>${entry.priority}</td>
+          <td><button class="delete-btn" onclick="deleteEntry(${index})">Delete</button></td>`;
+                table.appendChild(row);
+            });
+        }
+
+        function addTBR(e) {
+            e.preventDefault();
+            const title = titleInput.value.trim();
+            const author = authorInput.value.trim();
+            const date = document.getElementById("tbrDate").value || new Date().toISOString().split("T")[0];
+            const priority = document.getElementById("tbrPriority").value;
+
+            if (!title) {
+                alert("Please enter a book title.");
+                return;
+            }
+
+            tbrData.unshift({ title, author: author || "Unknown", date, priority });
+            localStorage.setItem("tbrList", JSON.stringify(tbrData));
+            renderTBR();
+            titleInput.value = "";
+            authorInput.value = "";
+            document.getElementById("tbrDate").value = "";
+        }
+
+        function deleteEntry(index) {
+            deleteIndex = index;
+            document.getElementById("customModal").style.display = "flex";
+        }
+
+        document.getElementById("confirmDelete").addEventListener("click", () => {
+            if (deleteIndex !== null) {
+                tbrData.splice(deleteIndex, 1);
+                localStorage.setItem("tbrList", JSON.stringify(tbrData));
+                renderTBR();
+                deleteIndex = null;
+            }
+            document.getElementById("customModal").style.display = "none";
+        });
+
+        document.getElementById("cancelDelete").addEventListener("click", () => {
+            document.getElementById("customModal").style.display = "none";
+            deleteIndex = null;
+        });
+
+
+        function updateDate(index, value) {
+            tbrData[index].date = value;
+            localStorage.setItem("tbrList", JSON.stringify(tbrData));
+        }
+
+        async function fetchGoogleBooks(query, isTitle = true) {
+            try {
+                const res = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=${isTitle ? 'intitle:' : 'inauthor:'}${query}`);
+                const books = res.data.items || [];
+                titleList.innerHTML = "";
+                authorList.innerHTML = "";
+
+                const titles = new Set();
+                const authors = new Set();
+                books.forEach(book => {
+                    const info = book.volumeInfo;
+                    if (info.title) titles.add(info.title);
+                    if (info.authors && info.authors.length) info.authors.forEach(a => authors.add(a));
+                });
+
+                titles.forEach(t => {
+                    const opt = document.createElement("option");
+                    opt.value = t;
+                    titleList.appendChild(opt);
+                });
+                authors.forEach(a => {
+                    const opt = document.createElement("option");
+                    opt.value = a;
+                    authorList.appendChild(opt);
+                });
+
+                // Auto-fill first author if author input is empty
+                if (isTitle && books[0]?.volumeInfo?.authors?.[0] && !authorInput.value) {
+                    authorInput.value = books[0].volumeInfo.authors[0];
+                }
+                if (!isTitle && books[0]?.volumeInfo?.title && !titleInput.value) {
+                    titleInput.value = books[0].volumeInfo.title;
+                }
+            } catch (err) {
+                console.error("Error fetching from Google Books API", err);
+            }
+        }
+
+        titleInput.addEventListener("input", () => {
+            const q = titleInput.value.trim();
+            if (q.length >= 3) fetchGoogleBooks(q, true);
+        });
+
+        authorInput.addEventListener("input", () => {
+            const q = authorInput.value.trim();
+            if (q.length >= 3) fetchGoogleBooks(q, false);
+        });
+
+        renderTBR();
+
+        <!-- Notification -->
+        if ("Notification" in window && Notification.permission !== "granted") {
+            Notification.requestPermission();
+        }
+        function checkDueBooks() {
+            const today = new Date().toISOString().split("T")[0];
+            const dueBooks = tbrData.filter(book => book.date === today);
+
+            if (dueBooks.length && Notification.permission === "granted") {
+                dueBooks.forEach(book => {
+                    new Notification("📚 TBR Reminder", {
+                        body: `"${book.title}" is scheduled to be read today!`,
+                        icon: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png", // optional
+                    });
+                });
+            }
+        }
+        renderTBR();
+        checkDueBooks();
+        setInterval(checkDueBooks, 3600000); // optional: repeat every hour
+
+    </script>
+</body>
+
+</html>

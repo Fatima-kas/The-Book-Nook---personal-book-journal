@@ -1,0 +1,137 @@
+<!-- The Book Nook - REGISTER PAGE -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register | The Book Nook</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand&family=Outfit:wght@300;400;600&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background: linear-gradient(to right, #fce3d0, #f9e4df);
+    }
+
+    header,
+    footer {
+      background-color: #d6b8a1;
+      color: white;
+      padding: 1rem 2rem;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2rem;
+    }
+
+    .register-wrapper {
+      flex-grow: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    .register-box {
+      background: #fff;
+      padding: 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .register-box h2 {
+      margin-bottom: 1.5rem;
+      font-size: 1.8rem;
+      color: #5b4a42;
+      text-align: center;
+    }
+
+    .register-box input,
+    .register-box button {
+      width: 100%;
+      padding: 0.8rem;
+      margin: 0.6rem 0;
+      border-radius: 8px;
+      border: 1px solid #d6b8a1;
+      font-size: 1rem;
+    }
+
+    .register-box button {
+      background-color: #b79982;
+      color: white;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .register-box button:hover {
+      background-color: #a1816f;
+    }
+
+    .register-box p {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: #555;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>The Book Nook</h1>
+  </header>
+  <div class="register-wrapper">
+    <div class="register-box">
+      <h2>Create Your Account and Login to Your Own Book Nook!</h2>
+      <input type="text" id="newUsername" placeholder="Choose Username" />
+      <input type="password" id="newPassword" placeholder="Choose Password" />
+      <button onclick="registerUser()">Register</button>
+      <p>Already registered? <a href="login.html">Login here</a></p>
+    </div>
+  </div>
+  <footer>
+    <p>&copy; 2025 Noor Fatima Kas. All Rights Reserved.</p>
+  </footer>
+  <script>
+    function registerUser() {
+      const user = document.getElementById('newUsername').value.trim();
+      const pass = document.getElementById('newPassword').value.trim();
+      let users = JSON.parse(localStorage.getItem('users') || '{}');
+
+      if (!user || !pass) {
+        alert("Please fill in both fields.");
+        return;
+      }
+
+      if (users[user]) {
+        alert("Username already exists.");
+        return;
+      }
+
+      users[user] = pass;
+      localStorage.setItem('users', JSON.stringify(users));
+      alert("Registration successful! You can now log in.");
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+
+</html>

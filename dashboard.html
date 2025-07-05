@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard | Chapter & Soul</title>
+  <script src="https://kit.fontawesome.com/453d6f846d.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+      padding: 0 1rem;
+    }
+
+    .dashboard-card {
+      background-color: #fff8f2;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      transition: transform 0.3s ease;
+      text-align: center;
+    }
+
+    .dashboard-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .dashboard-card i {
+      font-size: 2rem;
+      color: #b79982;
+      margin-bottom: 0.8rem;
+    }
+
+    .dashboard-card h3 {
+      font-size: 1.3rem;
+      margin-bottom: 0.5rem;
+      color: #5b4a42;
+    }
+
+    .dashboard-card p {
+      color: #6f5e53;
+      font-size: 0.95rem;
+    }
+
+    .welcome-message {
+      font-family: 'Courier New', Courier, monospace;
+      text-transform: uppercase;
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #7d5f4c;
+      margin-top: 2rem;
+    }
+
+    .quote-box {
+      background: #fff3ec;
+      border-left: 6px solid #b79982;
+      padding: 1rem 2rem;
+      margin: 1rem auto;
+      max-width: 700px;
+      color: #6d4e3c;
+      border-radius: 8px;
+      text-align: center;
+      font-style: italic;
+    }
+
+    .reminder-box {
+
+      background: #fdeae2;
+      font-weight: bold;
+      max-width: 600px;
+      margin: 1rem auto;
+      border-left: 6px solid #b79982;
+      padding: 1rem;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .mood-box {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      justify-content: center;
+      max-width: 600px;
+      margin: 2rem auto 1rem;
+    }
+
+    .mood-option {
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      border: 2px solid #b79982;
+      background: white;
+      cursor: pointer;
+      font-weight: 600;
+      color: #5b4a42;
+      transition: background 0.3s ease;
+      text-align: center;
+    }
+
+    .mood-option:hover,
+    .mood-option.active {
+      background-color: #fce3d0;
+    }
+
+    .mood-codes {
+      margin: 1rem auto 2rem;
+      background: #fffefc;
+      padding: 1rem 2rem;
+      border-radius: 10px;
+      max-width: 700px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem 2rem;
+    }
+
+    .mood-codes h4 {
+      grid-column: 1 / -1;
+      color: #5b4a42;
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+
+    .mood-codes ul {
+      list-style: disc;
+      padding-left: 1.2rem;
+      color: #6f5e53;
+    }
+
+    .shortcuts {
+      margin: 3rem 0 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.2rem;
+      justify-content: center;
+    }
+
+    .shortcuts a {
+      background: #d6b8a1;
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      color: white;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.3s ease;
+    }
+
+    .shortcuts a:hover {
+      background: #a1816f;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>The Book Nook</h1>
+    <div class="hamburger" onclick="toggleMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <nav>
+      <ul id="sidebar">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="MemoryBoard.html">MemoryBoard</a></li>
+        <li><a href="library-log.html">Reading Journey</a></li>
+        <li><a href="tbr.html">TBR List</a></li>
+        <li><a href="quotes.html">Quote Keeping</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h2 class="welcome-message" id="welcomeText">Welcome!</h2>
+    <div class="quote-box" id="dailyQuote"></div>
+
+    <div class="mood-box" aria-placeholder="Select a mood">
+      <span class="mood-option" onclick="selectMood(this, 'Calm')">📖 Calm</span>
+      <span class="mood-option" onclick="selectMood(this, 'Intense')">🔥 Intense</span>
+      <span class="mood-option" onclick="selectMood(this, 'Magical')">✨ Magical</span>
+      <span class="mood-option" onclick="selectMood(this, 'Thoughtful')">🧠 Thoughtful</span>
+      <span class="mood-option" onclick="selectMood(this, 'Emotional')">❤ Emotional</span>
+      <span class="mood-option" onclick="selectMood(this, 'Romantic')">💘 Romantic</span>
+    </div>
+
+    <h3 style="text-align: center; background-color: #d6b8a1; width: 650px; margin: 1rem auto;">Select a mood to get a
+      relative quote!</h3>
+
+    <div class="mood-codes">
+      <h4 id="moodHeading">Your Mood Picks Will Appear Here</h4>
+      <ul id="moodListLeft"></ul>
+      <ul id="moodListRight"></ul>
+    </div>
+
+    <div class="reminder-box" id="reminderBox">Keep your bookshelf fresh. Add something today! 📚</div>
+
+    <div class="dashboard-grid">
+      <h1 style="grid-column: 1 / -1; text-align: center; color: #5b4a42;">Here's what we have for you</h1>
+      <div class="dashboard-card">
+        <i class="bi bi-camera"></i>
+        <h3>Upload Highlights</h3>
+        <p>Share snapshots of your favorite novel lines or book moments.</p>
+      </div>
+      <div class="dashboard-card">
+        <i class="bi bi-book-half"></i>
+        <h3>Recent Reads</h3>
+        <p>Track what you've completed and keep your book log organized.</p>
+      </div>
+      <div class="dashboard-card">
+        <i class="bi bi-journal-bookmark"></i>
+        <h3>TBR List</h3>
+        <p>List the books you're excited to read next and stay inspired.</p>
+      </div>
+      <div class="dashboard-card">
+        <i class="bi bi-chat-quote"></i>
+        <h3>Favorite Quotes</h3>
+        <p>Preserve the lines that touched your soul and revisit them anytime.</p>
+      </div>
+    </div>
+
+    <div class="shortcuts">
+      <a href="uploads.html"><i class="bi bi-plus-circle"></i> Upload Photo</a>
+      <a href="quotes.html"><i class="bi bi-plus-circle"></i> Add Quote</a>
+      <a href="library-log.html"><i class="bi bi-plus-circle"></i> Log Book</a>
+      <a href="tbr.html"><i class="bi bi-plus-circle"></i> Add to TBR</a>
+      <button style="font-weight: bolder;" id="logoutButton" onclick="logout()">Logout</button>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Noor Fatima Kas. All Rights Reserved.</p>
+  </footer>
+
+  <script>
+    function toggleMenu() {
+      document.getElementById("sidebar").classList.toggle("active");
+    }
+
+    function logout() {
+      localStorage.removeItem("loggedInUser");
+      alert("You have been logged out.");
+      window.location.href = "login.html";
+    }
+
+    const user = localStorage.getItem("loggedInUser");
+    const welcomeText = document.getElementById("welcomeText");
+    const dailyQuote = document.getElementById("dailyQuote");
+
+    if (user) {
+      welcomeText.textContent = `Welcome back, ${user}!`;
+    } else {
+      alert("Please log in to access your dashboard.");
+      window.location.href = "login.html";
+    }
+
+    const moodQuotes = {
+      Calm: ["Peace is not found in a place, but in a moment.",
+        "Some days, the quiet is the most beautiful sound.",
+        "Let today be slow, soft, and full of small joys.",
+        "You don't have to chase the sun — sometimes the shade is perfect.",
+        "Even the sky takes breaks between storms.",
+        "There's beauty in the pause between plans.",
+        "Soft moments often leave the deepest impressions.",
+        "A gentle day is a gift to the soul.",
+        "Not every moment needs to be filled.",
+        "Books are a uniquely portable magic.",
+        "Some books are so familiar, reading them is like being home again..",
+        "Sometimes, all you need is a cozy blanket, a quiet room, and a novel to lose yourself in.",
+        "Between the lines of every great novel lies a peaceful place for the soul to rest.",
+        "With every page turned, a little more stress fades away.",
+        "When the world is too much, books whisper peace back into your heart."],
+      Intense: ["Some feelings are too big for words, but too loud to ignore.",
+        "There are days when your heart speaks louder than your voice.",
+        "Even the strongest waves crash — but they always return to the sea.",
+        "Emotions don’t make you weak; they prove you care.",
+        "Healing doesn’t always look like progress — it often looks like standing still.",
+        "Your silence doesn't mean you're fine — it often means you're full.",
+        "Some storms come to test your roots, not destroy you.",
+        "Sometimes, all you can do is sit with the ache — and that’s okay.",
+        "Even in chaos, your heart knows how to find its rhythm.",
+        "Tears are just words the soul can’t say out loud.",
+        "Some books find you when your heart needs a language it doesn’t yet speak.",
+        "The most powerful stories are written in the language of pain and hope.",
+        "Between the lines of heartbreak and healing, books hold space for you.",
+        "When emotions feel too heavy to carry, a novel can help share the weight.",
+        "Books don’t fix your feelings — they sit beside them, quietly understanding.",],
+      Magical: ["Some moments feel like they were made of stardust and silence.",
+        "Magic doesn’t always sparkle — sometimes it just feels like everything is exactly where it should be.",
+        "Wonder often arrives quietly, dressed as an ordinary day.",
+        "The world is still full of little miracles — you just have to look slower.",
+        "There’s a kind of magic in simply being present.",
+        "Not all spells are spoke n —some are felt with a glance, a breeze, or a thought.",
+        "When your heart lights up for no reason, that's magic.",
+        "Some days feel like a fairytale without the need for a happy ending.",
+        "The most enchanting moments are the ones we don’t plan.",
+        "You don’t have to believe in magic for it to find you.",
+        "Books are portals — each one a spell waiting to be read.",
+        "A good story doesn’t just take you away; it changes the way you return.",
+        "Some novels shimmer with quiet enchantment, long after the last page.",
+        "In a world of noise, a beautiful sentence can feel like a spell.",
+        "Magic lives in margins, metaphors, and midnight reads.",],
+      Thoughtful: ["Sometimes, the quietest moments hold the loudest truths.",
+        "Thoughts are like clouds — they drift, shift, and sometimes bring rain.",
+        "Stillness often reveals what noise tries to hide.",
+        "Not everything we carry is visible—and not everything visible is worth carrying.",
+        "Thoughts are like seeds; they grow into the garden of your mind.",
+        "Your pace doesn’t have to match the world to be right for you.",
+        "The right thought at the right time can change everything.",
+        "Being lost in thought is sometimes the only way to find yourself.",
+        "Clarity doesn’t always arrive loud — it often comes gently, over time.",
+        "Books slow the world just enough for you to hear your own thoughts.",
+        "Some pages make you stop — not because they end, but because they echo.",
+        "Reading isn’t escape — it’s introspection disguised as adventure.",
+        "Between the lines, books often ask the questions we’re afraid to voice.",
+        "Reading can feel like thinking out loud with someone else’s words.",
+        "A well-written line can linger longer than a loud conversation.",
+        "Books don’t just entertain—they mirror thoughts you didn’t know you had."
+      ],
+      Emotional: ["Emotions are the colors of our soul’s canvas.",
+        "Sometimes, the heart speaks in a language only tears can translate.",
+        "Feelings are like waves — they rise, crash, and recede, but they always leave something behind.",
+        "Your heart is a compass, even when it feels lost.",
+        "Some pages understand you better than people ever could.",
+        "A novel can cradle the pieces of you even when you can’t.",
+        "The most emotional stories aren’t written—they’re felt.",
+        "Books are where we find the words we were never brave enough to say out loud.",
+        "Sometimes, the most powerful emotions are the ones we can’t put into words.",
+        "Your feelings are valid, even when they don’t make sense.",
+        "Books don’t just tell stories—they hold space for your own.",
+        "Between the lines, novels often echo our own heartbeats.",
+        "You can miss someone who’s still right next to you.",
+        "There’s a quiet bravery in letting go of something you still want to hold.",
+        "Sometimes, the hardest goodbyes are the ones we never say.",
+        "Books can be the balm for wounds we didn’t know we had."],
+      Romantic: ["Love is the quiet magic that turns ordinary moments into extraordinary memories.",
+        "Sometimes, love is just a glance that says everything words can’t.",
+        "Romance isn’t always grand gestures; sometimes it’s the little things that matter most.",
+        "I didn’t believe in soulmates until your eyes said my name.",
+        "Every love song made sense the moment I met you.",
+        "You're the calm in my chaos and the spark in my silence.",
+        "Even in a crowded room, my heart only looks for you.",
+        "Your voice is my favorite sound, your name my favorite word.",
+        "Some hearts aren’t just held—they're understood.",
+        "You feel like something I never want to stop discovering.",
+        "If I had to choose again, I’d find you in every lifetime.",
+        "Love is simply existing together and calling it everything.",
+        "You’re the plot twist I never saw coming but always needed.",
+        "My favorite kind of fiction is falling for you daily.",
+        "You are the chapter I never want to close."
+      ]
+    };
+
+    const moodSuggestions = {
+      Calm: ["Read under soft lighting.", "Pick a cozy mystery.", "Try a chapter before bed.", "Journal your thoughts.", "Make tea and read.", "Reread a comfort book."],
+      Intense: ["Pick a thriller.", "Start a crime series.", "Read in silence.", "Take notes of plot twists.", "Share suspense quotes.", "Search for sequels."],
+      Magical: ["Read a fantasy.", "Draw a magic scene.", "Write your own spell.", "Pick a mythical world.", "Create character cards.", "Compare world-building."],
+      Thoughtful: ["Read nonfiction.", "Journal after reading.", "Debate plot points.", "Highlight life lessons.", "Summarize key ideas.", "Pose deep questions."],
+      Emotional: ["Pick a memoir.", "Rate cry-worthy reads.", "List touching moments.", "Add to 'feel' shelf.", "Talk about impact.", "Draw your emotion."],
+      Romantic: ["Read a love story.", "Make a ship name.", "Describe your OTP.", "Write a love note.", "Share kiss quotes.", "Read in candlelight."]
+    };
+
+    function selectMood(element, mood) {
+      document.querySelectorAll('.mood-option').forEach(btn => btn.classList.remove('active'));
+      element.classList.add('active');
+      localStorage.setItem("readingMood", mood);
+
+      const quote = moodQuotes[mood][Math.floor(Math.random() * moodQuotes[mood].length)];
+      dailyQuote.textContent = quote;
+
+      const heading = document.getElementById("moodHeading");
+      const left = document.getElementById("moodListLeft");
+      const right = document.getElementById("moodListRight");
+
+      heading.textContent = `${mood} Reading Suggestions:`;
+      left.innerHTML = "";
+      right.innerHTML = "";
+
+      const tips = moodSuggestions[mood];
+      tips.forEach((tip, index) => {
+        const li = document.createElement("li");
+        li.textContent = tip;
+        (index % 2 === 0 ? left : right).appendChild(li);
+      });
+    }
+  </script>
+</body>
+
+</html>

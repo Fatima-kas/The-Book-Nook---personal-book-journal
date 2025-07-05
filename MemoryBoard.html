@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Upload Highlights | My Novel Diary</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    .upload-container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: #fff8f2;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .upload-container h2 {
+      text-align: center;
+      color: #5b4a42;
+      margin-bottom: 1rem;
+    }
+
+    .upload-container p {
+      text-align: center;
+      color: #6f5e53;
+      margin-bottom: 2rem;
+    }
+
+    .upload-form input,
+    .upload-form textarea {
+      width: 100%;
+      padding: 0.8rem;
+      margin: 0.5rem 0 1rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+
+    .upload-form button {
+      background-color: #b79982;
+      color: white;
+      border: none;
+      padding: 0.8rem 2rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .upload-form button:hover {
+      background-color: #a1816f;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .gallery-item {
+      background: white;
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      position: relative;
+    }
+
+    .gallery-item img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+    }
+
+    .gallery-item p {
+      color: #5b4a42;
+      font-size: 0.9rem;
+    }
+
+    .delete-btn {
+      margin-top: 0.5rem;
+      padding: 0.4rem 0.8rem;
+      background: #e57b7b;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background 0.3s ease;
+    }
+
+    .delete-btn:hover {
+      background: #cc5c5c;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>The Book Nook</h1>
+    <div class="hamburger" onclick="toggleMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <nav>
+      <ul id="sidebar">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="MemoryBoard.html">MemoryBoard</a></li>
+        <li><a href="library-log.html">Reading Journey</a></li>
+        <li><a href="tbr.html">TBR List</a></li>
+        <li><a href="quotes.html">Quote Keeping</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main class="upload-container">
+    <h2>📸 Upload Your Book Moments</h2>
+    <p>Share a photo or a line you absolutely love. Let your diary remember it for you!</p>
+    <form class="upload-form" onsubmit="handleUpload(event)">
+      <input type="text" id="bookTitle" placeholder="Book Title" required />
+      <textarea id="caption" placeholder="Why this moment matters..." rows="3"></textarea>
+      <input type="file" id="imageUpload" accept="image/*" required />
+      <button type="submit">Upload</button>
+    </form>
+
+    <div id="customModal" class="modal">
+      <div class="modal-content">
+        <h3 style="background-color:#fecbcb;">🗑️ Delete Memory?</h3>
+        <p style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">This memory will be
+          permanently removed from your diary. Are you sure?</p>
+        <div class="modal-actions">
+          <button id="confirmDelete">Yes, Delete</button>
+          <button id="cancelDelete">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+
+    <section class="gallery" id="uploadGallery"></section>
+
+  </main>
+  <footer>
+    <p>&copy; 2025 Noor Fatima Kas. All Rights Reserved.</p>
+  </footer>
+  <script>
+    function toggleMenu() {
+      document.getElementById("sidebar").classList.toggle("active");
+    }
+
+    const uploadGallery = document.getElementById("uploadGallery");
+    let uploads = JSON.parse(localStorage.getItem("diaryUploads") || "[]");
+
+    function renderUploads() {
+      uploadGallery.innerHTML = "";
+      uploads.forEach((upload, index) => {
+        const item = document.createElement("div");
+        item.className = "gallery-item";
+        item.innerHTML = `
+          <img src="${upload.image}" alt="Upload">
+          <h4>${upload.title}</h4>
+          <p>${upload.caption}</p>
+          <button class="delete-btn" onclick="deleteUpload(${index})">Delete</button>
+        `;
+        uploadGallery.appendChild(item);
+      });
+    }
+
+    function handleUpload(event) {
+      event.preventDefault();
+
+      const title = document.getElementById("bookTitle").value.trim();
+      const caption = document.getElementById("caption").value.trim();
+      const imageInput = document.getElementById("imageUpload");
+      const file = imageInput.files[0];
+
+      if (!file) return alert("Please select an image.");
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const upload = {
+          title,
+          caption,
+          image: reader.result
+        };
+        uploads.unshift(upload);
+        localStorage.setItem("diaryUploads", JSON.stringify(uploads));
+        renderUploads();
+        event.target.reset();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    let deleteIndex = null;
+
+    function deleteUpload(index) {
+      deleteIndex = index;
+      document.getElementById("customModal").style.display = "flex";
+    }
+
+    document.getElementById("confirmDelete").addEventListener("click", () => {
+      uploads.splice(deleteIndex, 1);
+      localStorage.setItem("diaryUploads", JSON.stringify(uploads));
+      renderUploads();
+      document.getElementById("customModal").style.display = "none";
+    });
+
+    document.getElementById("cancelDelete").addEventListener("click", () => {
+      document.getElementById("customModal").style.display = "none";
+    });
+
+
+    renderUploads();
+  </script>
+</body>
+
+</html>
