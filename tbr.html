@@ -67,7 +67,7 @@
 
 <body>
     <header>
-    <h1><a href="index.html" style="color: #5b4a42; ">The Book Nook</a></h1>
+        <h1><a href="index.html" style="color: #5b4a42; ">The Book Nook</a></h1>
         <div class="hamburger" onclick="toggleMenu()">
             <span></span>
             <span></span>
@@ -112,9 +112,10 @@
                         <th>Author</th>
                         <th>Target Date</th>
                         <th>Priority</th>
-                        <th>Action</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
+
                 <tbody id="tbrTable">
                     <!-- TBR entries will be dynamically inserted here -->
                     <tr>
@@ -136,11 +137,24 @@
             </div>
         </div>
 
+
     </main>
     <footer>
         <p>&copy; 2025 Noor Fatima Kas. All Rights Reserved.</p>
     </footer>
     <script>
+
+        function labelBookEntry(entry) {
+            const labels = ["Title", "Author", "Target Date", "Priority"];
+            const fields = entry.querySelectorAll('td');
+            fields.forEach((field, index) => {
+                if (labels[index]) {
+                    field.setAttribute('data-label', labels[index]);
+                }
+            });
+        }
+
+
         let deleteIndex = null;
         function toggleMenu() {
             document.getElementById("sidebar").classList.toggle("active");
@@ -163,6 +177,7 @@
           <td>${entry.priority}</td>
           <td><button class="delete-btn" onclick="deleteEntry(${index})">Delete</button></td>`;
                 table.appendChild(row);
+                labelBookEntry(row);
             });
         }
 
@@ -172,6 +187,7 @@
             const author = authorInput.value.trim();
             const date = document.getElementById("tbrDate").value || new Date().toISOString().split("T")[0];
             const priority = document.getElementById("tbrPriority").value;
+            labelBookEntry(table.lastElementChild);
 
             if (!title) {
                 alert("Please enter a book title.");
